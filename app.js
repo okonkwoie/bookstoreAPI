@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const config = require('./config/config')
+const bookRouter = require('./routes/books')
 const mongodbConnect = require('./database/mongodb')
 
 const app = express()
@@ -9,11 +10,14 @@ const app = express()
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
+// for the router
+app.use('/api/v1/books', bookRouter)
+
 // error handler middleware
 app.use((err, req, res, next) => {
     console.log(err);
     const errorStatus = err.status || 500
-    res.status(errorStatus).send(`There's an error!`)
+    res.status(errorStatus).send(err.message)
     next()
 })
 

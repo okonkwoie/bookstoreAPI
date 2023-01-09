@@ -20,7 +20,7 @@ const bookSchema = new Schema({
     year: {
         type: Number,
         required: true,
-        max: [2022, 'Year must be less than or equal to 2020']
+        max: [2022, 'Year must be less than or equal to 2022']
     }, 
     isbn: {
         type: String,

@@ -1,6 +1,6 @@
-const joi = require('joi')
+const Joi = require('joi')
 
-const bookSchema = Joi.object({
+const bookAddSchema = Joi.object({
     title: Joi.string()
             .min(5)
             .max(50)
@@ -19,6 +19,11 @@ const bookSchema = Joi.object({
             .integer()
             .required()
             .max(2022),
+    isbn: Joi.string()
+            .min(10)
+            .max(13)
+            .required()
+            .trim(),
     price: Joi.number()
             .min(0)
             .required(),
@@ -28,16 +33,61 @@ const bookSchema = Joi.object({
             .default(Date.now)
 }) 
 
-// turning the validator into a middleware
-async function bookValidatorMW(req, res, next){
-    const bookPayload = req.body
+const bookUpdateSchema = Joi.object({
+    title: Joi.string()
+            .min(5)
+            .max(50)
+            .trim(),
+    shortDescription: Joi.string()
+            .min(5)
+            .max(500)
+            .trim(),
+    longDescription: Joi.string()
+            .min(10)
+            .trim(),
+    year: Joi.number()
+            .integer()
+            .max(2022),
+    isbn: Joi.string()
+            .min(10)
+            .max(13)
+            .trim(),
+    price: Joi.number()
+            .min(0)
+}) 
+
+// turning the add book validator into a middleware
+async function AddBookValidatorMW(req, res, next){
+    const bookPayLoad = req.body
 
     try {
-        await bookSchema.validateAsync(bookPayload)
+        await bookAddSchema.validateAsync(bookPayLoad)
         next()
     } catch (error) {
-        next(error.details[0].message)
+        next({
+            message: error.details[0].message,
+            status: 400
+        })
     }
 }
 
-module.exports = bookValidatorMW()
+// turning the update book validator into a middleware
+async function UpdateBookValidatorMW(req, res, next){
+    const bookPayLoad = req.body
+
+    try {
+        await bookUpdateSchema.validateAsync(bookPayLoad)
+        next()
+    } catch (error) {
+        next({
+            message: error.details[0].message,
+            status: 400
+        })
+    }
+}
+
+
+module.exports = {
+    AddBookValidatorMW,
+    UpdateBookValidatorMW
+}
