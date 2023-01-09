@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const config = require('./config/config')
 const bookRouter = require('./routes/books')
+const authorRouter = require('./routes/authors')
 const mongodbConnect = require('./database/mongodb')
 
 const app = express()
@@ -12,6 +13,7 @@ app.use(bodyParser.json())
 
 // for the router
 app.use('/api/v1/books', bookRouter)
+app.use('/api/v1/authors', authorRouter)
 
 // error handler middleware
 app.use((err, req, res, next) => {
