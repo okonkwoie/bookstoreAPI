@@ -50,7 +50,7 @@ mongodbConnect
 
 // home route
 app.get('/', (req, res) => {
-    res.send('book store is working!')
+    res.send('Welcome to my bookstore!')
 })
 
 
