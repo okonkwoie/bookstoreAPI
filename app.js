@@ -7,12 +7,17 @@ const bookRouter = require('./routes/books')
 const authorRouter = require('./routes/authors')
 const mongodbConnect = require('./database/mongodb')
 const logger = require('./logging/logger')
+const auth0Middleware = require('./auth/auth0')
+const { requiresAuth } = require('express-openid-connect')
 
 const app = express()
 
 // middlewares
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
+
+// auth router attaches /login, /logout and /callback routes to the baseurl
+app.use(auth0Middleware)
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
@@ -27,8 +32,9 @@ app.use(limiter)
 app.use(helmet())
 
 // for the router
-app.use('/api/v1/books', bookRouter)
-app.use('/api/v1/authors', authorRouter)
+app.use('/api/v1/books', requiresAuth(), bookRouter)
+app.use('/api/v1/authors', requiresAuth(), authorRouter)
+
 
 // error handler middleware
 app.use((err, req, res, next) => {
